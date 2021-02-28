@@ -5,6 +5,7 @@ import re
 import datetime
 import time
 import json
+import mapper
 
 now = datetime.datetime.now()
 
@@ -71,29 +72,32 @@ for i in range(0, len(tmp_arr)):
 
 
 message_text = "현재 빗갤러들은 어떤 이야기를 하며 인생을 낭비하고 있을까요?\n"
+message_text += "====================================\n"
 message_text += "수집시간 : " + str(now) + "\n"
 message_text += "수집데이터 : 빗갤 1~10 페이지\n"
-
-url2 = "https://api.upbit.com/v1/ticker?markets=KRW-BTC,KRW-ADA,KRW-PCI"
-price_info = requests.get(url2).content
-price_json = json.loads(price_info)
-
-for item in price_json:
-    if item['market'] == 'KRW-BTC':
-        message_text += "현재 비트코인 가격 : " + str(item['trade_price']) + "원\n"
-    if item['market'] == 'KRW-ADA':
-        message_text += "현재 에이다 가격 : " + str(item['trade_price']) + "원\n"
-    if item['market'] == 'KRW-PCI':
-        message_text += "현재 페이코인 가격: " + str(item['trade_price']) + "원\n"
+message_text += "====================================\n"
 
 cnt = 1
+url_arr = []
 for item in tmp_arr:
     if item['count'] > 10:
+        url_arr.append(item['title'])
         message_text += str(cnt) + ". " + \
             str(item['title']) + ",    " + \
             "언급횟수 : " + str(item['count']) + "\n"
 
         cnt += 1
+
+message_text += "====================================\n"
+
+url2 = "https://api.upbit.com/v1/ticker?markets=" + \
+    mapper.get_url_query(url_arr)
+price_info = requests.get(url2).content
+price_json = json.loads(price_info)
+
+for item in price_json:
+    message_text += mapper.get_coin_name(item['market']) + \
+        " : " + str(item['trade_price']) + "원\n"
 
 
 print(message_text)
