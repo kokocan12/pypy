@@ -95,14 +95,13 @@ url2 = "https://api.upbit.com/v1/ticker?markets=" + \
 price_info = requests.get(url2).content
 price_json = json.loads(price_info)
 
+
 for item in price_json:
     message_text += mapper.get_coin_name(item['market']) + \
         " : " + str(item['trade_price']) + "원\n"
 
 
-print(message_text)
-
-
 chat_ids = ['1581809877', '1514697082']
 for bs in chat_ids:
+    # print(message_text)
     bot.send_message(chat_id=bs, text=message_text)

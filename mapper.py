@@ -3,7 +3,8 @@ def get_url_query(list):
     for i in range(0, len(list)):
         for j in range(0, len(mapper)):
             if mapper[j]['korean_name'] == list[i]:
-                result.append(mapper[j]['market'])
+                if mapper[j]['market'] not in result:
+                    result.append(mapper[j]['market'])
 
     return ','.join(result)
 
